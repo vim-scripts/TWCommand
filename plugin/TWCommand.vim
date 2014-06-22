@@ -15,11 +15,11 @@ set cpo&vim
 if !exists('g:twcommand_restore_prevfocus')
 	let g:twcommand_restore_prevfocus = 1
 endif
-if !exists('g:twcommand_prevtabnr')
-	let g:twcommand_prevtabnr = tabpagenr()
+if !exists('g:twcommand_maxhistory')
+	let g:twcommand_maxhistory = 20
 endif
-if !exists('g:twcommand_prevwinnr')
-	let g:twcommand_prevwinnr = tabpagenr()
+if !exists('g:twcommand_push')
+	let g:twcommand_push = 1
 endif
 
 " commands
@@ -28,16 +28,15 @@ command! -nargs=* TWCommand call TWCommand#TWCommand(<f-args>)
 " autocmd
 augroup TWCommandAutoCmds
 	autocmd!
-	autocmd TabLeave * call s:OnTabLeave() 
 	autocmd WinLeave * call s:OnWinLeave() 
 augroup END
 
 " functions
-fun! s:OnTabLeave()
-	let g:twcommand_prevtabnr = tabpagenr()
-endfun
 fun! s:OnWinLeave()
-	let g:twcommand_prevwinnr = winnr()
+	if g:twcommand_push
+		call TWCommand#PushHistory(tabpagenr(), winnr())
+		"echo 'winleave' tabpagenr() winnr()
+	endif
 endfun
 
 """""""""""""""""""""""""""""""""""""""""""""
